@@ -1,0 +1,52 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cover_img_container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  position: relative;
+}
+
+.cover_img_container::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.cover_img_container > img {
+  z-index: 1;
+}
+
+.title {
+  font-size: large;
+  font-weight: bold;
+}
+
+.releaseDate {
+  font-size: small;
+}
+
+.company {
+  font-size: small;
+}
+.subTitle {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.description {
+  line-height: 20px;
+}
