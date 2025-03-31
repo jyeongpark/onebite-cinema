@@ -1,36 +1,51 @@
-import { useRouter } from "next/router";
-import movies from "@/mock/dummy.json";
-import { useEffect, useState } from "react";
-import { MovieData } from "@/types";
 import style from "./[id].module.css";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import fetchOneMovie from "@/lib/fetch-one-movie";
 
-export default function Movie() {
-  const router = useRouter();
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { id } = context.query as { id: string };
 
-  const { id } = router.query as { id: string };
+  const movieData = await fetchOneMovie(Number(id));
 
-  const [item, setItem] = useState<MovieData>();
+  return {
+    props: { movieData },
+  };
+};
 
-  useEffect(() => {
-    setItem(movies.find((el) => el.id === Number(id)));
-  }, [id]);
+export default function Movie({
+  movieData,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  if (!movieData) return;
+
+  const {
+    title,
+    subTitle,
+    description,
+    releaseDate,
+    company,
+    genres,
+    runtime,
+    posterImgUrl,
+  } = movieData;
 
   return (
     <div className={style.container}>
       <div
         className={style.cover_img_container}
-        style={{ backgroundImage: `url(${item?.posterImgUrl})` }}
+        style={{ backgroundImage: `url(${posterImgUrl})` }}
       >
-        <img src={item?.posterImgUrl} alt="" />
+        <img src={posterImgUrl} alt="" />
       </div>
-      <div className={style.title}>{item?.title}</div>
+      <div className={style.title}>{title}</div>
       <div className={style.releaseDate}>
-        {item?.releaseDate} / {item?.genres?.join(", ")} / {item?.runtime}분
+        {releaseDate} / {genres?.join(", ")} / {runtime}분
       </div>
-      <div className={style.company}>{item?.company}</div>
+      <div className={style.company}>{company}</div>
       <br />
-      <div className={style.subTitle}>{item?.subTitle}</div>
-      <div className={style.description}>{item?.description}</div>
+      <div className={style.subTitle}>{subTitle}</div>
+      <div className={style.description}>{description}</div>
     </div>
   );
 }
