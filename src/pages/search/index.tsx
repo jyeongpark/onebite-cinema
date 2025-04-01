@@ -1,29 +1,30 @@
 import SearchableLayout from "@/component/searchable-layout";
 import GridItems from "@/component/grid-items";
 import MovieItem from "@/component/movie-item";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import fetchMovies from "@/lib/fetch-movies";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { MovieData } from "@/types";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  const { q } = context.query as { q: string };
+export default function Search() {
+  const [data, setData] = useState<MovieData[]>([]);
 
-  const searchData = await fetchMovies(q);
+  const router = useRouter();
+  const { q } = router.query as { q: string };
 
-  return {
-    props: {
-      searchData,
-    },
+  const searchData = async () => {
+    const data = await fetchMovies(q);
+    setData(data);
   };
-};
-export default function Search({
-  searchData,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+
+  useEffect(() => {
+    searchData();
+  }, [q]);
+
   return (
     <div>
       <GridItems gridColumns={3}>
-        {searchData?.map((item) => (
+        {data?.map((item) => (
           <MovieItem key={item.id} movie={item} />
         ))}
       </GridItems>
